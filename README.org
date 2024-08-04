@@ -1,18 +1,35 @@
-#+TITLE: app-launcher
-#+AUTHOR: Sebastien Waegeneire
+#+TITLE: total-launcher
+#+AUTHOR: Molin Stepan 
 
-~app-launcher~ define the ~app-launcher-run-app~ command which uses Emacs 
-standard completion feature to select an application installed on your machine and launch it.
+~total-launcher~ is a fork of Sebastien Wae's ~app-laucner~, define the ~total-launcher-run-app~ command which uses Emacs standard completion feature to select a command from list of sources, and some sources to use.
 
-** How to install with ~straight.el~
+** Example usage
 #+BEGIN_SRC elisp
-(straight-use-package
-  '(app-launcher :type git :host github :repo "SebastienWae/app-launcher"))
-#+END_SRC
-Or if you are using ~use-package~ (thanks [[https://github.com/daviwil][@daviwil]])
-#+BEGIN_SRC elisp
-(use-package app-launcher
-  :straight '(app-launcher :host github :repo "SebastienWae/app-launcher"))
+(setq total-launcher-apps-prefix "App: ")
+(setq total-launcher-apps-add-keywords t)
+(defun emacs-run-launcher ()
+  (interactive)
+  (with-selected-frame 
+      (make-frame '((name . "emacs-run-launcher")
+                    (minibuffer . only)
+                    (fullscreen . 0) ; no fullscreen
+                    (undecorated . t) ; remove title bar
+                    (auto-raise . t) ; focus on this frame
+                    (internal-border-width . 10)
+                    (width . 60)
+                    (height . 11)))
+    (unwind-protect
+      (total-launcher-run-app 
+       (list (total-launcher-list-apps)
+	     (total-launcher-list-directory-contents-recursively 
+	       "~/Documents/" t nil "Documents: " "xdg-open")
+	     (total-launcher-list-directory-contents-recursively 
+	       "~/Books/" t nil "Books: " "zathura")
+	     (total-launcher-list-directory-contents
+	       "~/Pictures/" t "Image: " "xdg-open")
+             (total-launcher-list-directory-contents
+	       "~/Pictures/Sources/" t "Source: " "gimp")))
+      (delete-frame))))
 #+END_SRC
 
 
