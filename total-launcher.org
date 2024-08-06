@@ -1,7 +1,12 @@
+* Require
+#+begin_src emacs-lisp :tangle yes
 ;;; Code:
 (require 'xdg)
 (require 'cl-seq)
-
+#+end_src
+* Launcher
+** Variables
+#+begin_src emacs-lisp :tangle yes
 (defvar total-launcher-prompt "-> "
   "Prompt of total launcher.")
 
@@ -12,7 +17,9 @@
 (defcustom total-launcher--action-function #'total-launcher--action-function-default
   "Define the function that is used to run the selected application."
   :type 'function)
-
+#+end_src
+** Code
+#+begin_src emacs-lisp :tangle yes
 (defun total-launcher--annotation-function-default (choice choices-table)
   "Default function to annotate the completion choices."
   (let ((str (cdr (assq 'comment (gethash choice choices-table)))))
@@ -54,7 +61,10 @@ When ARG is non-nil, ignore NoDisplay property in *.desktop files."
 		      (cdr (assq 'visible y))))
 		  t nil 'total-launcher nil nil)))
     (funcall total-launcher--action-function result candidates)))
-
+#+end_src
+* Apps
+** Variables
+#+begin_src emacs-lisp :tangle yes
 (defvar total-launcher-apps-prefix nil
   "Prefix of apps.")
 
@@ -69,7 +79,9 @@ When ARG is non-nil, ignore NoDisplay property in *.desktop files."
 
 (defvar total-launcher--cached-desktop-files nil
   "List of cached desktop files.")
-
+#+end_src
+** Code
+#+begin_src emacs-lisp :tangle yes
 (defcustom total-launcher-apps-directories
   (mapcar (lambda (dir) (expand-file-name "applications" dir))
 	  (cons (xdg-data-home)
@@ -184,7 +196,9 @@ This function always returns its elements in a stable order."
       (setq total-launcher--apps-cache-timestamp (current-time))
       (setq total-launcher--cached-desktop-files new-files)))
   total-launcher--apps-cache)
-
+#+end_src
+* Directories
+#+begin_src emacs-lisp :tangle yes
 (defun total-launcher-list-directory-contents-recursively (directory hide-path all prefix command-to-open)
   "Return files in DIRECTORY, rercursively.
 When HIDE-PATH is non-nil, will only show names of files.
@@ -247,13 +261,18 @@ newline may cause problems."
 		       (cons 'visible t)
 		       (cons 'comment nil))
 		 hash)))))
-
+#+end_src
+* Recent files
+** Variables
+#+begin_src emacs-lisp :tangle yes
 (defvar total-launcher-command-to-open-file "xdg-open "
   "Command used to open file.")
 
 (defvar total-launcher-recentf-prefix "Recent: "
   "Prefix of recent files.")
-
+#+end_src
+** Code
+#+begin_src emacs-lisp :tangle yes
 (defun total-launcher-list-recentf ()
   "Return hash table of recent file names (from recentf-list) and commands to open them."
   (let ((hash (make-hash-table :test #'equal)))
@@ -265,6 +284,9 @@ newline may cause problems."
 		     (cons 'comment nil)
 		     (cons 'visible t))
 	       hash))))
-
+#+end_src
+* Provide
+#+begin_src emacs-lisp :tangle yes
 (provide 'total-launcher)
 ;;; total-launcher.el ends here
+#+end_src
