@@ -32,13 +32,13 @@
     (call-process-shell-command command nil 0 nil)))
 
 ;;;###autoload
-(defun total-launcher-run-app (sources &optional arg)
+(defun total-launcher-run-app (prompt sources &optional arg)
   "Launch an application installed on your machine.
 When ARG is non-nil, ignore NoDisplay property in *.desktop files."
   (interactive)
   (let* ((candidates (apply 'map-merge 'hash-table sources))
 	 (result (completing-read
-		  total-launcher-prompt
+		  prompt
 		  (lambda (str pred flag)
 		    (if (eq flag 'metadata)
 			'(metadata
@@ -131,7 +131,7 @@ This function always returns its elements in a stable order."
 	      (goto-char start)
 	      (when (re-search-forward "^Comment *= *\\(.+\\)$" end t)
 		(setq comment (match-string 1)))
-	      
+
 	      (setq keywords nil)
 	      (if total-launcher-apps-add-keywords
 		  (when (re-search-forward "^Keywords *= *\\(.+\\)$" end t)
@@ -151,13 +151,13 @@ This function always returns its elements in a stable order."
 
 	      (if total-launcher-apps-add-keywords
 					; FIXME
-		  (puthash (if keywords 
-			       (concat 
-				total-launcher-apps-prefix 
-				name 
-				" [" keywords "]") 
-			     (concat 
-			      total-launcher-apps-prefix 
+		  (puthash (if keywords
+			       (concat
+				total-launcher-apps-prefix
+				name
+				" [" keywords "]")
+			     (concat
+			      total-launcher-apps-prefix
 			      name))
 			   (list (cons 'exec exec)
 				 (cons 'comment comment)
@@ -186,6 +186,28 @@ This function always returns its elements in a stable order."
   total-launcher--apps-cache)
 
 (defun total-launcher-list-directory-contents-recursively (directory hide-path all prefix command-to-open)
+  "Return files in DIRECTORY, rercursively.
+When HIDE-PATH is non-nil, will only show names of files.
+When ALL is non-nil, will search in hidden files also.
+This may cause problems if directory contains files with same names.
+PREFIX is a prefix to all names.  COMMAND-TO-OPEN is a command to open
+files.  Does not work properly with symlinks, directory names including
+newline may cause problems."
+  (let* ((output (shell-command-to-string
+		   (concat (if all "ls -R1pa " "ls -R1p ") directory)))
+	 (path-length (length (expand-file-name directory)))
+	 (list-to-parse (split-string output "\n"))
+	 (hash (make-hash-table :test #'equal))
+         (current-line (car list-to-parse))
+         (current-directory nil))
+         (while list-to-parse
+           (setq current-directory (car list-to-parse)
+                 list-to-parse (cdr list-to-parse))
+           (while (string<> current-line "")
+
+
+
+(defun total-launcher-list-directory-contents-recursively-old (directory hide-path all prefix command-to-open)
   "Return files in DIRECTORY, rercursively.
 When HIDE-PATH is non-nil, will only show names of files.
 When ALL is non-nil, will search in hidden files also.
