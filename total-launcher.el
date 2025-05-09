@@ -185,7 +185,7 @@ This function always returns its elements in a stable order."
       (setq total-launcher--cached-desktop-files new-files)))
   total-launcher--apps-cache)
 
-(defun total-launcher-list-directory-contents-recursively (directory hide-path all prefix command-to-open)
+(defun total-launcher-list-directory-contents-recursively-unfinished (directory hide-path all prefix command-to-open)
   "Return files in DIRECTORY, rercursively.
 When HIDE-PATH is non-nil, will only show names of files.
 When ALL is non-nil, will search in hidden files also.
@@ -204,10 +204,11 @@ newline may cause problems."
            (setq current-directory (car list-to-parse)
                  list-to-parse (cdr list-to-parse))
            (while (string<> current-line "")
+		   ))))
 
 
 
-(defun total-launcher-list-directory-contents-recursively-old (directory hide-path all prefix command-to-open)
+(defun total-launcher-list-directory-contents-recursively (directory hide-path all prefix command-to-open)
   "Return files in DIRECTORY, rercursively.
 When HIDE-PATH is non-nil, will only show names of files.
 When ALL is non-nil, will search in hidden files also.
